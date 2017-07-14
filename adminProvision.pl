@@ -3,6 +3,7 @@ use warnings;
 
 use XML::Simple;
 use Net::FTP;
+# use WWW::Selenium;
 
 
 sub xml_upload {
@@ -20,12 +21,12 @@ sub xml_upload {
 }
 
 sub password_creation {
-		my $sel = WWW::Selenium->new( 	
-			host => "localhost",
-			port => 4444,
-			browser => "*iexplore",
-			browser_url => "http://www.google.com",
-		);
+	my $sel = WWW::Selenium->new( 	
+		host => "localhost",
+		port => 4444,
+		browser => "*iexplore",
+		browser_url => "http://www.google.com",
+	);
 
 	$sel->start;
 	$sel->open("http://www.google.com");
@@ -36,26 +37,32 @@ sub password_creation {
 	$sel->stop;
 }
 
-print "FTP Host:\n";
-my $input_ftp_host = <STDIN>;
-print "FTP Username:\n";
-my $input_ftp_user = <STDIN>;
-print "FTP Password:\n";
-my $input_ftp_pass = <STDIN>;
-print "Dev Key:\n";
-my $input_dev_key = <STDIN>;
-print "Dev Account Password:\n";
-my $input_dev_pass = <STDIN>;
+sub user_input{
+	print "FTP Host:\n";
+	my $input_ftp_host = <STDIN>;
+	print "FTP Username:\n";
+	my $input_ftp_user = <STDIN>;
+	print "FTP Password:\n";
+	my $input_ftp_pass = <STDIN>;
+	print "Dev Key:\n";
+	my $input_dev_key = <STDIN>;
+	print "Dev Account Password:\n";
+	my $input_dev_pass = <STDIN>;
 
-my $pre_provide_file_location = '/Users/WBosse/Desktop/merica.png';
-my $destination_directory = '/htdocs/mm5/test'
+	my $pre_provide_file_location = '/Users/WBosse/Desktop/merica.png';
+	my $destination_directory = '/htdocs/mm5/test';
 
-chomp($input_ftp_host,$input_ftp_user,$input_ftp_pass,$input_dev_key,$input_dev_pass);
+	chomp($input_ftp_host,$input_ftp_user,$input_ftp_pass,$input_dev_key,$input_dev_pass);
+}
 
-xml_upload(
-	$input_ftp_host,
-	$input_ftp_user, 
-	$input_ftp_pass,
-	$destination_directory,
-	$pre_provide_file_location
-);
+
+# xml_upload(
+# 	$input_ftp_host,
+# 	$input_ftp_user, 
+# 	$input_ftp_pass,
+# 	$destination_directory,
+# 	$pre_provide_file_location
+# );
+
+# password_creation();
+user_input();
