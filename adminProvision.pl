@@ -3,7 +3,6 @@ use warnings;
 
 use XML::Simple;
 use Net::FTP;
-use WWW::Selenium;
 
 
 sub xml_upload {
@@ -19,8 +18,8 @@ sub xml_upload {
 	print $ftp->message;
 }
 
-sub password_generation {
-	my $sel = WWW::Selenium->new( host => "localhost",
+sub password_creation {
+		my $sel = WWW::Selenium->new( host => "localhost",
 		port => 4444,
 		browser => "*iexplore",
 		browser_url => "http://www.google.com",
@@ -34,13 +33,3 @@ sub password_generation {
 	print $sel->get_title;
 	$sel->stop;
 }
-
-	# my ();
-	# $host = "ftp.mivamerchantdev.com";
-	# $user = "wes.bosse\@gmail.com";
-	# $pass = "fv1s2r1??";
-	# $dir = "/htdocs/mm5/test";
-	# $fpath = "/Users/WBosse/Desktop/merica.png";
-
-xml_upload("ftp.mivamerchantdev.com", "wes.bosse\@gmail.com", "fv1s2r1??", "/htdocs/mm5/test", "/Users/WBosse/Desktop/merica.png");
-
