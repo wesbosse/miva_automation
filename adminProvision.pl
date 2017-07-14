@@ -3,7 +3,7 @@ use warnings;
 
 use XML::Simple;
 use Net::FTP;
-# use WWW::Selenium;
+use WWW::Mechanize;
 
 
 sub xml_upload {
@@ -21,20 +21,18 @@ sub xml_upload {
 }
 
 sub password_creation {
-	my $sel = WWW::Selenium->new( 	
-		host => "localhost",
-		port => 4444,
-		browser => "*iexplore",
-		browser_url => "http://www.google.com",
+	my $mech = WWW::Mechanize->new;
+	my $sequence = '...';
+	$mech->get('https://'.$sub.$name'.com/Merchant2/admin.mvc');
+	$mech->submit_form(
+		form_number => 0,
+		fields => {
+			'UserName' => 'support_wbosse',
+			'PassWord' => '',
+		},
 	);
 
-	$sel->start;
-	$sel->open("http://www.google.com");
-	$sel->type("q", "hello world");
-	$sel->click("btnG");
-	$sel->wait_for_page_to_load(5000);
-	print $sel->get_title;
-	$sel->stop;
+	print $mech->content;
 }
 
 sub user_input{
@@ -64,5 +62,7 @@ sub user_input{
 # 	$pre_provide_file_location
 # );
 
-# password_creation();
-user_input();
+password_creation();
+# user_input();
+
+# handle merchant2 vs mm5
