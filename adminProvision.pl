@@ -1,3 +1,4 @@
+# 701497
 use strict;
 use warnings;
 
@@ -21,16 +22,27 @@ sub xml_upload {
 }
 
 sub password_creation {
-	my $mech = WWW::Mechanize->new;
+	my $mech = WWW::Mechanize->new;  
 	my $sequence = '...';
-	$mech->get('https://'.$sub.$name'.com/Merchant2/admin.mvc');
+	# $mech->get('https://'.$sub.$name'.com/Merchant2/admin.mvc');
+	$mech->get('');
 	$mech->submit_form(
 		form_number => 0,
 		fields => {
-			'UserName' => 'support_wbosse',
+			'UserName' => '',
 			'PassWord' => '',
 		},
 	);
+	# my $mech = WWW::Mechanize->new;  
+	# my $sequence = '...';
+	# $mech->get('https://'.$sub.$name'.com/Merchant2/admin.mvc');
+	# $mech->submit_form(
+	# 	form_number => 0,
+	# 	fields => {
+	# 		'UserName' => 'support_wbosse',
+	# 		'PassWord' => '',
+	# 	},
+	# );
 
 	print $mech->content;
 }
