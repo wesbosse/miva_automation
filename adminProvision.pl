@@ -8,42 +8,56 @@ use Net::FTP;
 use WWW::Mechanize;
 
 sub pre_provide_manipulation {
+	#initialize hashing algo
+	my $pbkdf2 = Crypt::PBKDF2->new(
+		hash_class => 'SHA1',
+		iterations => 1000,
+		output_len => 20,
+		salt_len => 4,
+	);
+
+	#set temporary password
+	my $hash = $pbkdf2->generate('M1v@temp');
+
 	# create object
 	$xml = new XML::Simple;
 
 	# read XML file
-	$pre_provide = $xml->XMLin("pre-provide.xml");
+	$pre_provide = $xml->XMLin('pre-provide.xml');
+
+	# insert temporary password
+
 
 	# print output
 	print Dumper($pre_provide);
 }
 
 sub xml_upload {
+	# grab user input and initialize FTP instance
 	my ($host, $user, $pass, $dir, $fpath) = @_;
-	my $ftp;
+	my $ftp = Net::FTP->new($host, Debug => 1);
 
-
-	$ftp = Net::FTP->new($host, Debug => 1);
+	# login, navigate to private, and upload pre-provide
 	$ftp->login($user, $pass) || die $ftp->message;
 	$ftp->cwd($dir);
 	$ftp->put($fpath) || die $ftp->message;
 	$ftp->quit;
 
-	print $ftp->message;
+	# print $ftp->message;
 }
 
 
 
 sub password_creation {
  	my $mech = WWW::Mechanize->new;  
-	my $sequence = '...';
+
 	# $mech->get('https://'.$sub.$name'.com/Merchant2/admin.mvc');
 	$mech->get('https://dts3100.mivamerchantdev.com/mm5/admin.mvc');
 	$mech->submit_form(
 		form_number => 0,
 		fields => {
-			'UserName' => 'wbosse@miva.com',
-			'PassWord' => '',
+			'UserName' => 'support_wbosse',
+			'PassWord' => 'M1v\@temp',
 		},
 	);
 	# my $mech = WWW::Mechanize->new;  
@@ -63,8 +77,8 @@ sub password_creation {
 
 
 # Testing Variables
-my $pre_provide_file_location = '/Users/WBosse/Desktop/merica.png';
-my $destination_directory = '/mivadata/mm5/test';
+#my $pre_provide_file_location = '/Users/WBosse/Desktop/merica.png';
+#my $destination_directory = '/mivadata/mm5/test';
 
 
 
@@ -107,9 +121,17 @@ password_creation(
 
 
 
+my $hash = $pbkdf2->generate('s3kr1t_password');
+if ($pbkdf2->validate($hash, 's3kr1t_password')) {
+access_granted();
+}
+
+
 
 
 #TODO:
 	# handle merchant2 vs mm5
 	# user input converted to userConfig.xml
 	# create account for all sub-domains
+	# LastPass CLI integration
+	# ball out
