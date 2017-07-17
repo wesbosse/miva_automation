@@ -6,6 +6,8 @@ use XML::Simple;
 use Data::Dumper;
 use Net::FTPSSL;
 use WWW::Mechanize;
+use Browser::Open qw(open_browser);
+use Term::ReadKey;
 # use Crypt::PBKDF2;
 # use LWP::Protocol::https;
 
@@ -38,24 +40,30 @@ use WWW::Mechanize;
 
 sub xml_upload {
 	# grab user input and initialize FTP instance
-	my ($host, $user, $pass, $dir, $fpath) = @_;
-	my $ftp = Net::FTPSSL->new($host, Debug => 1);
+	my ($host, $user, $pass, $fpath, $sub) = @_;
+	my $ftp = Net::FTPSSL->new($host, Debug => 0);
+	my $dir = '';
+	# if ($sub ne 'www') {
+	# 	my $dir = '/private/'.$sub.'/mivadata/';
+	# } else {
+	my $dir = '/private/mivadata/';
+	# }
 
 	# login, navigate to private, and upload pre-provide
 	$ftp->login($user, $pass) || die $ftp->message;
-	# $ftp->cwd($dir);
-	# $ftp->put($fpath) || die $ftp->message;
+	$ftp->cwd($dir);
+	$ftp->put($fpath) || die $ftp->message;
 	$ftp->quit;
 
-	# print $ftp->message;
+	 print $ftp->message;
 }
 
 sub password_creation {
-	my $domain = @_;
+	my ($key, $pass, $sub, $domain) = @_;
  	my $mech = WWW::Mechanize->new;  
-
-	$mech->get('http://'.$domain.'.com/Merchant2/admin.mvc');
-	# $mech->get('http://dts3100.mivamerchantdev.com/mm5/admin.mvc');
+ 	# print $sub;
+ 	# print $domain;
+	$mech->get('https://'.$sub.'.'.$domain.'.com/mm5/admin.mvc');
 	$mech->submit_form(
 		form_number => 0,
 		fields => {
@@ -63,24 +71,28 @@ sub password_creation {
 			'PassWord' => '6lupqPBvjDVh2MFr',
 		},
 	);
-	# my $mech = WWW::Mechanize->new;  
-	# my $sequence = '...';
-	# $mech->get('https://'.$sub.$name'.com/Merchant2/admin.mvc');
-	# $mech->submit_form(
-	# 	form_number => 0,
-	# 	fields => {
-	# 		'UserName' => 'support_wbosse',
-	# 		'PassWord' => '',
-	# 	},
-	# );
+	$mech->submit_form(
+		form_number => 0,
+		fields => {
+			'User_License' => $key,
+			'User_Password' => $pass,
+			'User_VerifyPassword' => $pass
+		},
+	);
+	$mech->tick('name' => 'User_Accept_License');
+	$mech->submit_form(
+		form_number => 0,
+		fields => {
+		},
+	);
 
 	print $mech->content;
 }
 
 # Testing Variables
 # my $pre_provide_file_location = 'pre-provide.xml';
-my $pre_provide_file_location = 'test.txt';
-my $destination_directory = '/private/dev/mivadata/';
+my $pre_provide_file_location = 'pre-provide.xml';
+
 
 # Gather User Input
 print "FTP Host:\n";
@@ -88,11 +100,15 @@ my $input_ftp_host = <STDIN>;
 print "FTP Username:\n";
 my $input_ftp_user = <STDIN>;
 print "FTP Password:\n";
+ReadMode('noecho');
 my $input_ftp_pass = <STDIN>;
 print "Dev Key:\n";
 my $input_dev_key = <STDIN>;
-print "Dev Account Password:\n";
+print "Desired Dev Account Password:\n";
+ReadMode(0);
 my $input_dev_pass = <STDIN>;
+print "Sub-Domain:\n";
+my $input_sub_domain = <STDIN>;
 print "Domain:\n";
 my $input_domain = <STDIN>;
 
@@ -102,6 +118,7 @@ chomp(
 		$input_ftp_pass,
 		$input_dev_key,
 		$input_dev_pass,
+		$input_sub_domain,
 		$input_domain
 	);
 
@@ -111,17 +128,21 @@ xml_upload(
 		$input_ftp_host,
 		$input_ftp_user, 
 		$input_ftp_pass,
-		$destination_directory,
-		$pre_provide_file_location
+		$pre_provide_file_location,
+		$input_sub_domain
+	);
+print "\n \n \n";
+password_creation(
+		$input_dev_key,
+		$input_dev_pass,
+		$input_sub_domain,
+		$input_domain
 	);
 
-# password_creation(
-# 		$input_domain
-# 	);
-
+open_browser('http://'.$input_sub_domain.'.'.$input_domain.'.com/mm5/admin.mvc');
 #TODO:
 	# handle merchant2 vs mm5
 	# user input converted to userConfig.xml
 	# create account for all sub-domains
 	# LastPass CLI integration
-	# ball out
+	# auto log-in
