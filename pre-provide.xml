@@ -1,0 +1,18 @@
+<Provision oncomplete="delete">
+    <Domain>
+        <User_Delete name="support_wbosse"></User_Delete>
+        <User_Add>
+            <Name>support_wbosse</Name>
+            <Password>PBKDF2:sha1:1000:/mKY6WFpvtDx4PhqVyvJbw==:3lOXBoLyRjAgx2jLvLb3iAhXhNM=</Password>
+            <ForcePasswordChange>Yes</ForcePasswordChange>
+            <DefaultPagination>1000</DefaultPagination>
+            <Administrator>1</Administrator>
+            <CanCreateUsers>1</CanCreateUsers>
+            <StartInSimpleMode>0</StartInSimpleMode>
+            <License type="developer" />
+        </User_Add>
+        <Settings_Update>
+            <ConcurrentAdminSessions>0</ConcurrentAdminSessions>
+        </Settings_Update>
+    </Domain>
+</Provision>

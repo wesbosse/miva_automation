@@ -4,60 +4,63 @@ use warnings;
 
 use XML::Simple;
 use Data::Dumper;
-use Net::FTP;
+use Net::FTPSSL;
 use WWW::Mechanize;
+# use Crypt::PBKDF2;
+# use LWP::Protocol::https;
 
-sub pre_provide_manipulation {
-	#initialize hashing algo
-	my $pbkdf2 = Crypt::PBKDF2->new(
-		hash_class => 'SHA1',
-		iterations => 1000,
-		output_len => 20,
-		salt_len => 4,
-	);
+# sub pre_provide_manipulation {
+# 	#initialize hashing algo
+# 	# my $pbkdf2 = Crypt::PBKDF2->new(
+# 	# 	hash_class => 'SHA1',
+# 	# 	iterations => 1000,
+# 	# 	output_len => 20,
+# 	# 	salt_len => 4,
+# 	# );
 
-	#set temporary password
-	my $hash = $pbkdf2->generate('M1v@temp');
+# 	# #set temporary password
+# 	# my $hash = $pbkdf2->generate('M1v@temp');
 
-	# create object
-	$xml = new XML::Simple;
+# 	# create object
+# 	my $xml = new XML::Simple;
 
-	# read XML file
-	$pre_provide = $xml->XMLin('pre-provide.xml');
+# 	# read XML file
+# 	my $pre_provide = $xml->XMLin('pre-provide.xml');
 
-	# insert temporary password
+# 	# insert temporary password
 
 
-	# print output
-	print Dumper($pre_provide);
-}
+# 	# # print output
+# 	print Dumper($pre_provide);
+# 	print "\n";
+# 	# print $hash;
+# }
 
 sub xml_upload {
 	# grab user input and initialize FTP instance
 	my ($host, $user, $pass, $dir, $fpath) = @_;
-	my $ftp = Net::FTP->new($host, Debug => 1);
+	my $ftp = Net::FTPSSL->new($host, Debug => 1);
 
 	# login, navigate to private, and upload pre-provide
 	$ftp->login($user, $pass) || die $ftp->message;
-	$ftp->cwd($dir);
-	$ftp->put($fpath) || die $ftp->message;
+	# $ftp->cwd($dir);
+	# $ftp->put($fpath) || die $ftp->message;
 	$ftp->quit;
 
 	# print $ftp->message;
 }
 
-
-
 sub password_creation {
+	my $domain = @_;
  	my $mech = WWW::Mechanize->new;  
 
-	# $mech->get('https://'.$sub.$name'.com/Merchant2/admin.mvc');
-	$mech->get('https://dts3100.mivamerchantdev.com/mm5/admin.mvc');
+	$mech->get('http://'.$domain.'.com/Merchant2/admin.mvc');
+	# $mech->get('http://dts3100.mivamerchantdev.com/mm5/admin.mvc');
 	$mech->submit_form(
 		form_number => 0,
 		fields => {
 			'UserName' => 'support_wbosse',
-			'PassWord' => 'M1v\@temp',
+			'PassWord' => '6lupqPBvjDVh2MFr',
 		},
 	);
 	# my $mech = WWW::Mechanize->new;  
@@ -74,13 +77,10 @@ sub password_creation {
 	print $mech->content;
 }
 
-
-
 # Testing Variables
-#my $pre_provide_file_location = '/Users/WBosse/Desktop/merica.png';
-#my $destination_directory = '/mivadata/mm5/test';
-
-
+# my $pre_provide_file_location = 'pre-provide.xml';
+my $pre_provide_file_location = 'test.txt';
+my $destination_directory = '/private/dev/mivadata/';
 
 # Gather User Input
 print "FTP Host:\n";
@@ -96,8 +96,6 @@ my $input_dev_pass = <STDIN>;
 print "Domain:\n";
 my $input_domain = <STDIN>;
 
-
-
 chomp(
 		$input_ftp_host,
 		$input_ftp_user,
@@ -107,6 +105,8 @@ chomp(
 		$input_domain
 	);
 
+# pre_provide_manipulation();
+
 xml_upload(
 		$input_ftp_host,
 		$input_ftp_user, 
@@ -115,19 +115,9 @@ xml_upload(
 		$pre_provide_file_location
 	);
 
-password_creation(
-		$input_domain
-	);
-
-
-
-my $hash = $pbkdf2->generate('s3kr1t_password');
-if ($pbkdf2->validate($hash, 's3kr1t_password')) {
-access_granted();
-}
-
-
-
+# password_creation(
+# 		$input_domain
+# 	);
 
 #TODO:
 	# handle merchant2 vs mm5
