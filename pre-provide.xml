@@ -16,3 +16,12 @@
         </Settings_Update>
     </Domain>
 </Provision>
+
+
+
+
+<Provision oncomplete="delete">
+    <Domain>
+        <User_Delete name="support_wbosse"></User_Delete>
+    </Domain>
+</Provision>
