@@ -181,3 +181,10 @@ ftp_account_creation();
 	# create account for all sub-domains
 	# LastPass CLI integration
 	# auto log-in
+
+
+#SECURITY 
+	#rate limiter
+	#restricted by my miva account
+	#Sanatize inputs
+	
