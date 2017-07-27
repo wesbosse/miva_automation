@@ -3,59 +3,48 @@ use strict;
 use warnings;
 
 use XML::Simple;
-# use Data::Dumper;
-# use Net::FTPSSL;
+use Net::FTPSSL;
 use WWW::Mechanize;
 use Browser::Open qw(open_browser);
 use Term::ReadKey;
-use Crypt::PBKDF2;
+
 use LWP::Protocol::https;
 
-sub pre_provide_manipulation {
-	#initialize hashing algo
-	# my $pbkdf2 = Crypt::PBKDF2->new(
-	# 	hash_class => 'SHA1',
-	# 	iterations => 1000,
-	# 	output_len => 20,
-	# 	salt_len => 4,
-	# );
-
-	# #set temporary password
-	# my $hash = $pbkdf2->generate('M1v@temp');
-
-	# create object
-	my $xml = new XML::Simple;
-
-	# read XML file
-	my $pre_provide = $xml->XMLin('pre-provide.xml');
-
-	# insert temporary password
-
-
-	# # print output
-	print Dumper($pre_provide);
-	print "\n"; 
-	# print $hash; 
-} 
 
 sub xml_upload {
-	# grab user input and initialize FTP instance
-	my ($host, $user, $pass, $fpath, $sub) = @_;
-	my $ftp = Net::FTPSSL->new($host, Debug => 0);
-	my $dir = '';
-	# if ($sub ne 'www') {
-	# 	my $dir = '/private/'.$sub.'/mivadata/';
-	# } else {
-	my $dir = '/private/mivadata/';
-	# }
 
-	# login, navigate to private, and upload pre-provide
+	print "FTP Host:\n";
+		my $host = <STDIN>;
+	print "FTP Username:\n";
+		my $user = <STDIN>;
+	print "FTP Password:\n";
+		ReadMode('noecho');
+		my $pass = <STDIN>;
+		ReadMode(0);
+	
+	# Generate for all sub domains - TODO
+	print "Sub-Domain:\n";
+		my $sub = <STDIN>;
+	#####################################
+	
+	my $fpath = 'pre-provide.xml';
+
+	if ($sub ne 'www') {
+		my $dir = '/private/'.$sub.'/mivadata/';
+	} else {
+		my $dir = '/private/mivadata/';
+	}
+
+	# connect to FTP host
+	my $ftp = Net::FTPSSL->new($host, Debug => 0);
+	
+	# login, navigate to proper directory, and upload pre-provide
 	$ftp->login($user, $pass) || die $ftp->message;
 	$ftp->cwd($dir);
 	$ftp->put($fpath) || die $ftp->message;
 	$ftp->quit;
 
-	 print $ftp->message;
+	#print $ftp->message;
 }
 
 sub password_creation {
@@ -124,26 +113,17 @@ sub ftp_account_creation {
 
 # Testing Variables
 # my $pre_provide_file_location = 'pre-provide.xml';
-my $pre_provide_file_location = 'pre-provide.xml';
+
 
 
 # Gather User Input
-print "FTP Host:\n";
-my $input_ftp_host = <STDIN>;
-print "FTP Username:\n";
-my $input_ftp_user = <STDIN>;
-print "FTP Password:\n";
-ReadMode('noecho');
-my $input_ftp_pass = <STDIN>;
+
 print "Dev Key:\n";
 my $input_dev_key = <STDIN>;
 print "Desired Dev Account Password:\n";
 ReadMode(0);
 my $input_dev_pass = <STDIN>;
-print "Sub-Domain:\n";
-my $input_sub_domain = <STDIN>;
-print "Domain:\n";
-my $input_domain = <STDIN>;
+
 
 chomp(
 		$input_ftp_host,
@@ -155,7 +135,6 @@ chomp(
 		$input_domain
 	);
 
-# pre_provide_manipulation();
 
 xml_upload(
 		$input_ftp_host,
@@ -164,7 +143,7 @@ xml_upload(
 		$pre_provide_file_location,
 		$input_sub_domain
 	);
-print "\n \n \n";
+
 password_creation(
 		$input_dev_key,
 		$input_dev_pass,
@@ -172,19 +151,12 @@ password_creation(
 		$input_domain
 	);
 
-open_browser('http://'.$input_sub_domain.'.'.$input_domain.'.com/mm5/admin.mvc');
+open_browser(
+		'http://'.$input_sub_domain.'.'.$input_domain.'.com/mm5/admin.mvc'
+	);
 
 ftp_account_creation();
-#TODO:
-	# handle merchant2 vs mm5
-	# user input converted to userConfig.xml
-	# create account for all sub-domains
-	# LastPass CLI integration
-	# auto log-in
 
 
-#SECURITY 
-	#rate limiter
-	#restricted by my miva account
-	#Sanatize inputs
+
 	
