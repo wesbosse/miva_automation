@@ -156,7 +156,3 @@ open_browser(
 	);
 
 ftp_account_creation();
-
-
-
-	

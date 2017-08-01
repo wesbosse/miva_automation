@@ -8,4 +8,6 @@
 		<!-- client account creds -->
 		<!-- dev key -->
 	</Credentials>
+	<Permissions>
+	</Permissions>
 </User>
